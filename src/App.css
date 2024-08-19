@@ -1,0 +1,78 @@
+* {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+
+  outline: 0px solid red;
+  margin: 0;
+  padding: 0;
+}
+
+.webpage-container {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+}
+
+.webpage-container {
+  height: 100vh;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+
+  padding: 24px;
+  background-color: red;
+}
+
+.card {
+  padding: 16px;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 0 5px 0 black;
+}
+
+header {
+  width: 30%;
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 50%;
+  text-align: center;
+}
+
+.form > form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+form > div {
+  margin-right: 16px;
+}
+
+label {
+  float: left;
+  clear: left;
+  text-align: right;
+
+  width: 100px;
+
+  margin-right: 8px;
+}
+
+input {
+  float: left;
+  width: 175px;
+}
+
+.sample {
+  background-color: purple;
+}
