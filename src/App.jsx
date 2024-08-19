@@ -5,10 +5,26 @@ import viteLogo from '/vite.svg'
 import './App.css'
 
 function SamplePage({name = "miles", email = "something@gmail.com"}) {
+  function Item(props) {
+    const [isEditing, setIsEditing] = useState(false);
+    const [name, setName] = useState(props.name);
+  
+    return isEditing ? (
+      <div>
+        <input type="text" value={name} onChange={e => setName(e.target.value)} />
+        <button onClick={() => setIsEditing(false)}>Stop Editing</button>
+      </div>
+    ) : (
+      <div onClick={() => setIsEditing(true)}>
+        <p>{name}</p>
+      </div>
+    );
+  }
+
   return(
     <div>
-      <p>{name}</p>
-      <p>{email}</p>
+      <Item name={name}/>
+      <Item name={email}/>
     </div>
   );
 }
@@ -17,11 +33,16 @@ function App() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
-  const onButtonClick = (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
 
-    console.log(event); // some local storage thing?
-  };
+    let form = event.target;
+    let formData = new FormData(form);
+    let formDataObj = Object.fromEntries(formData.entries());
+
+    setName(formDataObj.name);
+    setEmail(formDataObj.email);
+  }
 
   return (
     <>
@@ -33,19 +54,21 @@ function App() {
 
           <div className="form card">
             <p>All requried fields are preceded by a *</p>
-            <form action="">
+
+            <form onSubmit={handleSubmit}>
               <div>
                 <label htmlFor='name'>* Full Name:</label>
-                <input type="text" name='name' value={name} onChange={() => {setName(event.target.value);}} placeholder='John Smith' required />
+                <input type="text" name='name' placeholder='John Smith' required />
               </div>
 
               <div>
                 <label htmlFor='mail'>* Email:</label>
-                <input type="email" name='mail' value={email} onChange={() => {setEmail(event.target.value)}} placeholder='email@placeholder.com' required />
+                <input type="email" name='mail' placeholder='email@placeholder.com' required />
               </div>
 
-              <button type="submit" onClick={onButtonClick}>Save</button>
+              <button type="submit">Save</button>
             </form>
+
           </div>
         </div>
         
