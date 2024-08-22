@@ -4,80 +4,139 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-function SamplePage({name = "miles", email = "something@gmail.com"}) {
-  function Item(props) {
-    const [isEditing, setIsEditing] = useState(false);
-    const [name, setName] = useState(props.name);
-  
-    return isEditing ? (
-      <div>
-        <input type="text" value={name} onChange={e => setName(e.target.value)} />
-        <button onClick={() => setIsEditing(false)}>Stop Editing</button>
-      </div>
-    ) : (
-      <div onClick={() => setIsEditing(true)}>
-        <p>{name}</p>
-      </div>
-    );
-  }
+import { useForm, useFieldArray, Controller } from "react-hook-form"
+import { DevTool } from '@hookform/devtools'
+
+function App() {
+  const { register, control, handleSubmit, reset, trigger, setError} = useForm({
+
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "test"
+  });
 
   return(
-    <div>
-      <Item name={name}/>
-      <Item name={email}/>
+    <div className='container'>
+      <form onSubmit={handleSubmit(data => console.log(data))}>
+        <div className="field">
+          <label>Full Name</label>
+          <input {...register("firstName", {required: true})} />
+        </div>
+
+        <div className="field">
+          <label>Email Address</label>
+          <input {...register("email", {required: true})} />
+        </div>
+
+        <ul>
+          <p>Education</p>
+          {fields.map((item, index) => (
+            <li key={item.id}>
+              {/*<label>First Name</label>
+              <input {...register(`test.${index}.firstName`)} />*/}
+              <Controller
+                render={({field}) => <input {...field} />}
+                name={`test.${index}.firstName`}
+                control={control}
+              />
+              <Controller
+                render={({field}) => <input {...field} />}
+                name={`test.${index}.lastName`}
+                control={control}
+              />
+              <button type="button" onClick={() => remove(index)}>Delete</button>
+            </li>
+          ))}
+        </ul>
+
+        <button type="button" onClick={() => append({ firstName: "Bill", lastName: "Luo"})}>Append</button>
+
+        <input type="submit" />
+      </form>
+
+      <DevTool control={control} />
     </div>
   );
 }
 
+export default App
+
+{/*const data = [
+  { question: "Q1", answer: "A1"},
+  { question: "Q2", answer: "A2"},
+  { question: "Q3", answer: "A3"},
+  { question: "Q4", answer: "A4"},
+];
+
 function App() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
 
-  const handleSubmit = (event) => {
+  const [schools, setSchools] = useState(["Yippee"]);
+
+  function handleSubmit(event) {
+    event.preventDefault();
+  
+    console.log("Here's the stuff!");
+    console.log(`Name: ${name}; Email: ${email}`);
+    console.log(`Phone Number: ${phone}; Address: ${address}`);
+  }
+
+  function handleSchool(event, index) {
     event.preventDefault();
 
-    let form = event.target;
-    let formData = new FormData(form);
-    let formDataObj = Object.fromEntries(formData.entries());
-
-    setName(formDataObj.name);
-    setEmail(formDataObj.email);
+    console.log(schools[index]);
+    console.log(index);
   }
 
   return (
     <>
-      <div className="webpage-container">
-        <div className="form-container">
-          <header className="card">
-            <h1>CV Builder</h1>
-          </header>
+      <div className="container">
+        <h1>CV Builder</h1>
 
-          <div className="form card">
-            <p>All requried fields are preceded by a *</p>
+        <form action="" onSubmit={() => handleSubmit(event)}>
+          <div className="fields">
+            <div>
+              <label htmlFor="name">Full Name</label>
+              <input type="text" name="name" id="name" value={name} onChange={(e) => setName(e.target.value)} />
+            </div>
 
-            <form onSubmit={handleSubmit}>
-              <div>
-                <label htmlFor='name'>* Full Name:</label>
-                <input type="text" name='name' placeholder='John Smith' required />
-              </div>
+            <div>
+              <label htmlFor="email">Email</label>
+              <input type="email" name="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            </div>
 
-              <div>
-                <label htmlFor='mail'>* Email:</label>
-                <input type="email" name='mail' placeholder='email@placeholder.com' required />
-              </div>
+            <div>
+              <label htmlFor="phone">Phone Number</label>
+              <input type="tel" name="phone" id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            </div>
 
-              <button type="submit">Save</button>
-            </form>
-
+            <div>
+              <label htmlFor="address">Address</label>
+              <input type="text" name="address" id="address" value={address} onChange={(e) => setAddress(e.target.value)} />
+            </div>
           </div>
-        </div>
-        
-        <div className="sample">
-          <SamplePage name={name} email={email} />
-        </div>
+
+          <details>
+            <summary>Education</summary>
+
+            {schools.map((school, index) => {
+              return(
+                <div key={index}>
+                  <label htmlFor="school">School</label>
+                  <input type="text" name="school" id="school" value={schools[index]} onChange={(e, key) => {handleSchool(e, key)}} />
+                </div>
+              );
+            })}
+          </details>
+          
+          <button type="submit">Submit</button>
+        </form>
       </div>
     </>
   );
-}
-
-export default App
+}*/}
