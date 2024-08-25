@@ -4,139 +4,278 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-import { useForm, useFieldArray, Controller } from "react-hook-form"
+import { useForm, useFieldArray, Controller, useController } from "react-hook-form"
 import { DevTool } from '@hookform/devtools'
 
-function App() {
-  const { register, control, handleSubmit, reset, trigger, setError} = useForm({
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 
+import Button from '@mui/material/Button';
+
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import { Typography } from '@mui/material'
+
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+
+function App() {
+  const {
+    control, register, handleSubmit,
+  } = useForm();
+
+  const { fields: schoolsFields, append: schoolsAppend, remove: schoolsRemove } = useFieldArray({
+    control,
+    name: 'schools',
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields: jobsFields, append: jobsAppend, remove: jobsRemove } = useFieldArray({
     control,
-    name: "test"
+    name: 'jobs',
+  });
+
+  {/*const [schools, setSchools] = useState([]);*/}
+
+  function School(name, study, date) {
+    this.name = name;
+    this.study = study;
+    this.date = date;
+  }
+
+  {/*function updateSchool(index, event, num) {
+    event.preventDefault();
+    let newArr = [...schools];
+
+    if (num == 0) {
+      newArr[index].name = event.target.value;
+      setSchools(newArr);
+    } else if (num == 1) {
+      newArr[index].study = event.target.value;
+      setSchools(newArr);
+    } else if (num == 2) {
+      newArr[index].date = event.target.value;
+      setSchools(newArr);
+    }
+  }*/}
+
+  const onSubmit = (data) => console.log(data);
+
+  const { field: fullName } = useController({
+    control: control,
+    name: "Full Name",
+    rules: { require: true },
+  });
+
+  const { field: email } = useController({
+    control: control,
+    name: "Email",
+    rules: { require: true },
+  });
+
+  const { field: phone } = useController({
+    control: control,
+    name: "Phone Number",
+    rules: { require: true },
+  });
+
+  const { field: address } = useController({
+    control: control,
+    name: "Address",
+    rules: { require: true },
   });
 
   return(
-    <div className='container'>
-      <form onSubmit={handleSubmit(data => console.log(data))}>
-        <div className="field">
-          <label>Full Name</label>
-          <input {...register("firstName", {required: true})} />
-        </div>
+    <div>
+      <Container 
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '500px',
+          backgroundColor: 'red',
+        }}
+      >
+        <Typography variant='h3' component='h1'>
+          CV Builder
+        </Typography>
 
-        <div className="field">
-          <label>Email Address</label>
-          <input {...register("email", {required: true})} />
-        </div>
+        <Paper elevation={2}>
+          <Typography variant='subtitle2' sx={{textAlign: 'center'}}>
+            All required fields will have a asterik (*) next to it.
+          </Typography>
 
-        <ul>
-          <p>Education</p>
-          {fields.map((item, index) => (
-            <li key={item.id}>
-              {/*<label>First Name</label>
-              <input {...register(`test.${index}.firstName`)} />*/}
-              <Controller
-                render={({field}) => <input {...field} />}
-                name={`test.${index}.firstName`}
-                control={control}
-              />
-              <Controller
-                render={({field}) => <input {...field} />}
-                name={`test.${index}.lastName`}
-                control={control}
-              />
-              <button type="button" onClick={() => remove(index)}>Delete</button>
-            </li>
-          ))}
-        </ul>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField 
+                  label="Full Name" 
+                  variant='outlined' 
+                  required 
+                  onChange={fullName.onChange}
+                  value={fullName.value}
+                  name={fullName.name}
+                  inputRef={fullName.ref}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField 
+                  label="Email" 
+                  variant='outlined' 
+                  required 
+                  onChange={email.onChange}
+                  value={email.value}
+                  name={email.name}
+                  inputRef={email.ref}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField 
+                  label="Phone Number" 
+                  variant='outlined' 
+                  required 
+                  onChange={phone.onChange}
+                  value={phone.value}
+                  name={phone.name}
+                  inputRef={phone.ref}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField 
+                  label="Address" 
+                  variant='outlined' 
+                  required 
+                  onChange={address.onChange}
+                  value={address.value}
+                  name={address.name}
+                  inputRef={address.ref}
+                />
+              </Grid>
+            </Grid>
+            
+            <Box sx={{
+              display: 'flex', 
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+            }}>
+              <Typography variant="subtitle1" sx={{textAlign: 'center'}}>
+                Education
+              </Typography>
+              
+              <Button 
+                variant="contained"
+                onClick={() => {
+                  /*setSchools(school => [...school, new School("", "", "")]);*/
+                  schoolsAppend({ name: "", study: "", date: ""});
+                }}
+              >
+                Add
+              </Button>
+            </Box>
 
-        <button type="button" onClick={() => append({ firstName: "Bill", lastName: "Luo"})}>Append</button>
+            {schoolsFields.map((field, index) => {
+              return(
+                <>
+                  <Accordion key={field.id} >
+                    <AccordionSummary>
+                      {`School #${index+1}`}
+                      <Button
+                        variant="outlined"
+                        sx={{
+                          transform: 'translateY(-10px)',
+                          scale: 0.8,
+                          marginLeft: 2,
+                        }}
+                        onClick={() => {
+                            schoolsRemove(index);
+                        }}
+                      >
+                        Remove
+                      </Button>
+                    </AccordionSummary>
 
-        <input type="submit" />
-      </form>
+                    <AccordionDetails>
+                      <TextField label="School Name" variant="outlined" {...register(`schools.${index}.name`)} />
+                      <TextField label="Study" variant="outlined" {...register(`schools.${index}.study`)} />
+                      <TextField label="Date of Attendance" variant="outlined" {...register(`schools.${index}.date`)} />
+                    </AccordionDetails>
+                  </Accordion>
+                </>
+              );
+            })}
 
-      <DevTool control={control} />
+            <Box sx={{
+              display: 'flex', 
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+            }}>
+              <Typography variant="subtitle1" sx={{textAlign: 'center'}}>
+                Jobs
+              </Typography>
+              
+              <Button 
+                variant="contained"
+                onClick={() => {
+                  /*setSchools(school => [...school, new School("", "", "")]);*/
+                  jobsAppend({ name: "", position: "", start: "", end: "", description: ""});
+                }}
+              >
+                Add
+              </Button>
+            </Box>
+
+            {jobsFields.map((field, index) => {
+              return(
+                <>
+                  <Accordion key={field.id} >
+                    <AccordionSummary>
+                      {`Job #${index+1}`}
+                      <Button
+                        variant="outlined"
+                        sx={{
+                          transform: 'translateY(-10px)',
+                          scale: 0.8,
+                          marginLeft: 2,
+                        }}
+                        onClick={() => {
+                            jobsRemove(index);
+                        }}
+                      >
+                        Remove
+                      </Button>
+                    </AccordionSummary>
+
+                    <AccordionDetails>
+                      <TextField label="Company Name" variant="outlined" {...register(`jobs.${index}.name`)} />
+                      <TextField label="Position Title" variant="outlined" {...register(`schools.${index}.position`)} />
+                      <TextField label="Start Date" variant="outlined" {...register(`schools.${index}.start`)} />
+                      <TextField label="End Date" variant="outlined" {...register(`schools.${index}.end`)} />
+                      <TextField multiline label="Description" variant="outlined" {...register(`schools.${index}.description`)} />
+                    </AccordionDetails>
+                  </Accordion>
+                </>
+              );
+            })}
+
+            <input type="submit" />
+          </form>
+          
+        </Paper>
+      </Container>
+
+      {/*<DevTool control={control} />*/}
     </div>
   );
 }
 
 export default App
-
-{/*const data = [
-  { question: "Q1", answer: "A1"},
-  { question: "Q2", answer: "A2"},
-  { question: "Q3", answer: "A3"},
-  { question: "Q4", answer: "A4"},
-];
-
-function App() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-
-  const [schools, setSchools] = useState(["Yippee"]);
-
-  function handleSubmit(event) {
-    event.preventDefault();
-  
-    console.log("Here's the stuff!");
-    console.log(`Name: ${name}; Email: ${email}`);
-    console.log(`Phone Number: ${phone}; Address: ${address}`);
-  }
-
-  function handleSchool(event, index) {
-    event.preventDefault();
-
-    console.log(schools[index]);
-    console.log(index);
-  }
-
-  return (
-    <>
-      <div className="container">
-        <h1>CV Builder</h1>
-
-        <form action="" onSubmit={() => handleSubmit(event)}>
-          <div className="fields">
-            <div>
-              <label htmlFor="name">Full Name</label>
-              <input type="text" name="name" id="name" value={name} onChange={(e) => setName(e.target.value)} />
-            </div>
-
-            <div>
-              <label htmlFor="email">Email</label>
-              <input type="email" name="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            </div>
-
-            <div>
-              <label htmlFor="phone">Phone Number</label>
-              <input type="tel" name="phone" id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
-            </div>
-
-            <div>
-              <label htmlFor="address">Address</label>
-              <input type="text" name="address" id="address" value={address} onChange={(e) => setAddress(e.target.value)} />
-            </div>
-          </div>
-
-          <details>
-            <summary>Education</summary>
-
-            {schools.map((school, index) => {
-              return(
-                <div key={index}>
-                  <label htmlFor="school">School</label>
-                  <input type="text" name="school" id="school" value={schools[index]} onChange={(e, key) => {handleSchool(e, key)}} />
-                </div>
-              );
-            })}
-          </details>
-          
-          <button type="submit">Submit</button>
-        </form>
-      </div>
-    </>
-  );
-}*/}
